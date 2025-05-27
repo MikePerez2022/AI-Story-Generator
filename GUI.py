@@ -1,3 +1,5 @@
+import FileSystem as fs;
+import AutoCommenterAI as ac;
 import customtkinter as ctk;
 
 def CreateGUI():
@@ -15,7 +17,7 @@ def CreateGUI():
     selectFile = ctk.CTkButton(window, text="Update AI prompt")
     selectFile.pack()
     
-    display = ctk.CTkTextbox(window, wrap="word", text_color="orange")
+    display = ctk.CTkTextbox(window, wrap="word", text_color="white")
     display.pack(pady=10, padx=20, fill="both", expand=True)
     
     displayBtn = ctk.CTkButton(window, text="Generate story")
@@ -28,6 +30,12 @@ def CreateGUI():
     downloadBtn.pack(pady=20)
     
     window.mainloop()
+
+def CommentAndDisplay(display):
+    output = ac.comment_code(display.get(0.0, ctk.END))
+    print("Updating Display...")
+    display.delete(1.0, ctk.END)
+    print("Display Updated")
 
 
 CreateGUI()
