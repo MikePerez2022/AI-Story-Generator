@@ -1,41 +1,77 @@
-import FileSystem as fs;
-import AutoCommenterAI as ac;
-import customtkinter as ctk;
+import FileSystem as fs
+import StoryGenerator as sg
+import customtkinter as ctk
 
 def CreateGUI():
     window = ctk.CTk()
-    window.title("Code Auto Commenter")
+    window.title("AI Story Generator")
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme("dark-blue")
-    window.geometry("800x520")
-    lable = ctk.CTkLabel(window, text="AI Code Commenter", anchor="center")
-    lable.pack()
+    window.geometry("800x600")
+
+    label = ctk.CTkLabel(window, text="AI Story Generator", font=("Arial", 20, "bold"), anchor="center")
+    label.pack(pady=10)
+
+    prompt = ctk.CTkEntry(window, width=600, placeholder_text="Enter your custom story prompt")
+    prompt.pack(pady=10)
     
-    filePath = ctk.CTkEntry(window, width=500, placeholder_text="Enter Story parameters")
-    filePath.pack(pady=10)
+    dropdown_frame = ctk.CTkFrame(window)
+    dropdown_frame.pack(pady=10)
+
+    genre = ctk.StringVar(value="Fantasy")
+    genre_dropdown = ctk.CTkOptionMenu(dropdown_frame, variable=genre, values=["Fantasy", "Sci-Fi", "Mystery", "Horror", "Romance", "Adventure"])
+    genre_dropdown.grid(row=0, column=0, padx=5)
     
-    selectFile = ctk.CTkButton(window, text="Update AI prompt")
-    selectFile.pack()
+    language = ctk.StringVar(value="English")
+    language_dropdown = ctk.CTkOptionMenu(dropdown_frame, variable=language, values=["English", "Spanish", "French"])
+    language_dropdown.grid(row=0, column=1, padx=5)
+
+    audience = ctk.StringVar(value="General")
+    audience_dropdown = ctk.CTkOptionMenu(dropdown_frame, variable=audience, values=["Adults", "Teens", "Children", "General"])
+    audience_dropdown.grid(row=0, column=2, padx=5)
+
+    length = ctk.StringVar(value="Short")
+    length_dropdown = ctk.CTkOptionMenu(dropdown_frame, variable=length, values=["Short", "Medium", "Long"])
+    length_dropdown.grid(row=0, column=3, padx=5)
+
+    style = ctk.StringVar(value="Descriptive")
+    style_dropdown = ctk.CTkOptionMenu(dropdown_frame, variable=style, values=["Descriptive", "Dialog-Heavy", "Action-Packed", "Humorous", "Dark", "Whimsical"])
+    style_dropdown.grid(row=0, column=4, padx=5)
     
+    model_frame = ctk.CTkFrame(window)
+    model_frame.pack(pady=10)
+    
+    model_label = ctk.CTkLabel(model_frame, text="AI Model:")
+    model_label.grid(row=0, column=0, padx=5)
+    
+    model = ctk.StringVar(value="mistral:instruct")
+    model_dropdown = ctk.CTkOptionMenu(model_frame, variable=model, values=["mistral:instruct"])
+    model_dropdown.grid(row=0, column=1, padx=5)
+
     display = ctk.CTkTextbox(window, wrap="word", text_color="white")
     display.pack(pady=10, padx=20, fill="both", expand=True)
     
-    displayBtn = ctk.CTkButton(window, text="Generate story")
-    displayBtn.pack(pady=20)
     
-    AIComment = ctk.CTkButton(window, text="Select download location")
-    AIComment.pack(pady=20)
-    
-    downloadBtn = ctk.CTkButton(window, text="Download as file")
-    downloadBtn.pack(pady=20)
-    
+    actions_frame = ctk.CTkFrame(window)
+    actions_frame.pack(pady=20)
+
+    generate_btn = ctk.CTkButton(actions_frame, text="Generate Story", command=lambda: GenerateStory(prompt.get(), genre.get(), display))
+    generate_btn.grid(row=0, column=0, padx=5)
+
+    download_btn = ctk.CTkButton(actions_frame, text="Download Story as .txt", command=lambda: fs.DownloadFileGUI("AI_Story", display.get(0.0, ctk.END)))
+    download_btn.grid(row=0, column=1, padx=5)
+
+    clear_btn = ctk.CTkButton(actions_frame, text="Clear Output", command=lambda: display.delete(1.0, ctk.END))
+    clear_btn.grid(row=0, column=2, padx=5)
+
     window.mainloop()
 
-def CommentAndDisplay(display):
-    output = ac.comment_code(display.get(0.0, ctk.END))
-    print("Updating Display...")
+def GenerateStory(prompt, Language, genre, audience, length, style, display):
+    full_prompt = f"Language: {Language}, Genre: {genre}, Audience: {audience}, Length: {length}, Writing Style: {style}\nPrompt: {prompt}"
+    story = sg.generate(full_prompt)
+    print("Generating story...")
     display.delete(1.0, ctk.END)
-    print("Display Updated")
-
+    display.insert(ctk.END, story)
+    print("Story displayed.")
 
 CreateGUI()
