@@ -45,7 +45,7 @@ Make sure you have:
 
 ### Option 2: Run the Standalone Executable
 
-1. Download the pre-built `.exe` file from the [Releases](#).
+1. Download the pre-built `.exe` file from the [Releases](https://github.com/MikePerez2022/AI-Story-Generator/releases/tag/story-generator-v1).
 2. Double-click to launch the app.
 3. Make sure Ollama is installed and your model is pulled and running.
 
