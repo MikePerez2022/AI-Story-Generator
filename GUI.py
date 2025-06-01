@@ -45,17 +45,16 @@ def CreateGUI():
     model_label.grid(row=0, column=0, padx=5)
     
     model = ctk.StringVar(value="mistral:instruct")
-    model_dropdown = ctk.CTkOptionMenu(model_frame, variable=model, values=["mistral:instruct"])
+    model_dropdown = ctk.CTkOptionMenu(model_frame, variable=model, values=["mistral:instruct", "deepseek-r1"])
     model_dropdown.grid(row=0, column=1, padx=5)
 
     display = ctk.CTkTextbox(window, wrap="word", text_color="white")
     display.pack(pady=10, padx=20, fill="both", expand=True)
     
-    
     actions_frame = ctk.CTkFrame(window)
     actions_frame.pack(pady=20)
 
-    generate_btn = ctk.CTkButton(actions_frame, text="Generate Story", command=lambda: GenerateStory(prompt.get(), genre.get(), display))
+    generate_btn = ctk.CTkButton(actions_frame, text="Generate Story", command=lambda: GenerateStory(prompt.get(), language.get(), genre.get(), audience.get(), length.get(), style.get(), display, model.get()))
     generate_btn.grid(row=0, column=0, padx=5)
 
     download_btn = ctk.CTkButton(actions_frame, text="Download Story as .txt", command=lambda: fs.DownloadFileGUI("AI_Story", display.get(0.0, ctk.END)))
@@ -66,9 +65,12 @@ def CreateGUI():
 
     window.mainloop()
 
-def GenerateStory(prompt, Language, genre, audience, length, style, display):
-    full_prompt = f"Language: {Language}, Genre: {genre}, Audience: {audience}, Length: {length}, Writing Style: {style}\nPrompt: {prompt}"
-    story = sg.generate(full_prompt)
+def GenerateStory(prompt, Language, genre, audience, length, style, display, name):
+    print("Prompting...")
+    full_prompt = f"Boundaries: Don't generate anything harmful or inappropriate in a college setting, Language: {Language}, Genre: {genre}, Audience: {audience}, Length: {length}, Writing Style: {style}\nPrompt: {prompt}"
+    print("Prompt created.")
+    story = sg.generate(full_prompt, name)
+    print(story)
     print("Generating story...")
     display.delete(1.0, ctk.END)
     display.insert(ctk.END, story)
