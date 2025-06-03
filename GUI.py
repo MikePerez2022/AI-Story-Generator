@@ -1,6 +1,7 @@
 import FileSystem as fs
 import StoryGenerator as sg
 import customtkinter as ctk
+import threading
 
 def CreateGUI():
     window = ctk.CTk()
@@ -69,11 +70,15 @@ def GenerateStory(prompt, Language, genre, audience, length, style, display, nam
     print("Prompting...")
     full_prompt = f"Boundaries: Don't generate anything harmful or inappropriate in a college setting, Language: {Language}, Genre: {genre}, Audience: {audience}, Length: {length}, Writing Style: {style}\nPrompt: {prompt}"
     print("Prompt created.")
-    story = sg.generate(full_prompt, name)
-    print(story)
-    print("Generating story...")
     display.delete(1.0, ctk.END)
-    display.insert(ctk.END, story)
-    print("Story displayed.")
+
+    def stream_to_display():
+        for chunk in sg.stream_generate(full_prompt, name):
+            if chunk:
+                display.insert(ctk.END, chunk)
+                display.update_idletasks()
+        print("Story displayed.")
+
+    threading.Thread(target=stream_to_display, daemon=True).start()
 
 CreateGUI()
