@@ -25,10 +25,33 @@ def generate(prompt, model = "") -> str:
 def stream_comment_code(prompt: str, modelName: str):
     print("Sending prompt to Ollama (streaming)...")
     response_stream = ollama.chat(model=modelName, messages=[{"role": "user", "content": prompt}], stream=True)
+    buffer = ""
+    inside_think = False
     for chunk in response_stream:
         content = chunk["message"]["content"] if "message" in chunk and "content" in chunk["message"] else ""
-        content = _clean_deepseek_think(content, modelName)
-        yield content
+        if modelName == "deepseek-r1":
+            buffer += content
+            # Remove all <think>...</think> blocks, even if split across chunks
+            cleaned = ""
+            while True:
+                start = buffer.find("<think>")
+                end = buffer.find("</think>")
+                if start != -1 and end != -1 and end > start:
+                    cleaned += buffer[:start]
+                    buffer = buffer[end+8:]
+                elif start != -1 and (end == -1 or end < start):
+                    cleaned += buffer[:start]
+                    buffer = buffer[start:]
+                    break
+                else:
+                    cleaned += buffer
+                    buffer = ""
+                    break
+            #cleaned = cleaned.strip()
+            if cleaned:
+                yield cleaned
+        else:
+            yield content
     print("Streaming response complete.")
 
 def stream_generate(prompt, model=""):
