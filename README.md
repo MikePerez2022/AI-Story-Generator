@@ -79,3 +79,4 @@ ollama pull model_name
 ```
 
 > ⚠️ If the model used hasn't been pulled or started, the app will not be able to generate stories.
+> Make sure the machine running the programm has a good cooling system or cooling fans because the models work your machine
